@@ -24,6 +24,15 @@ Languages
     pt, ro, ru, sk, sl, so, sq, sv, sw, ta, te, th, tl, tr, uk, ur, vi, zh-cn, zh-tw
 
 
+Clean Language Profiles
+=======================
+Some of the language profiles contain characters that belong to other languages since all the profiles were created automatically. Run the following script to clean
+the language profiles:
+
+```bash
+python scripts/clean_language_profiles.py
+```
+
 Basic usage
 ===========
 
