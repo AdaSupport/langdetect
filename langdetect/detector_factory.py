@@ -19,8 +19,11 @@ class DetectorFactory(object):
     This class manages an initialization and constructions of Detector.
 
     Before using language detection library,
-    load profiles with DetectorFactory.load_profile(str)
+    load profiles with DetectorFactory.load_profile(str, list)
     and set initialization parameters.
+
+    You could also specify the pool of languages to make predictions
+    from by specifying supported_languages.
 
     When the language detection,
     construct Detector instance via DetectorFactory.create().
@@ -32,8 +35,9 @@ class DetectorFactory(object):
         self.word_lang_prob_map = {}
         self.langlist = []
 
-    def load_profile(self, profile_directory):
-        list_files = os.listdir(profile_directory)
+    def load_profile(self, profile_directory, supported_languages=[]):
+        list_files = supported_languages if supported_languages else os.listdir(profile_directory)
+
         if not list_files:
             raise LangDetectException(ErrorCode.NeedLoadProfileError, 'Not found profile: ' + profile_directory)
 
@@ -116,22 +120,26 @@ class DetectorFactory(object):
 
 PROFILES_DIRECTORY = path.join(path.dirname(__file__), 'profiles')
 _factory = None
+_supported_languages = []
 
-def init_factory():
+def init_factory(supported_languages=[]):
     global _factory
-    if _factory is None:
-        _factory = DetectorFactory()
-        _factory.load_profile(PROFILES_DIRECTORY)
+    global _supported_languages
 
-def detect(text):
-    init_factory()
+    if _factory is None or _supported_languages != supported_languages:
+        _supported_languages = supported_languages
+        _factory = DetectorFactory()
+        _factory.load_profile(PROFILES_DIRECTORY, _supported_languages)
+
+def detect(text, supported_languages=[]):
+    init_factory(supported_languages=supported_languages)
     detector = _factory.create()
     detector.append(text)
     return detector.detect()
 
 
-def detect_langs(text):
-    init_factory()
+def detect_langs(text, supported_languages=[]):
+    init_factory(supported_languages=supported_languages)
     detector = _factory.create()
     detector.append(text)
     return detector.get_probabilities()
