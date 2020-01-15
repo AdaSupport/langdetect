@@ -35,7 +35,15 @@ class DetectorFactory(object):
         self.word_lang_prob_map = {}
         self.langlist = []
 
-    def load_profile(self, profile_directory, supported_languages=[]):
+    def load_profile(self, profile_directory, supported_languages=None):
+        """
+        Loads language profiles from the given directory.
+
+        Args:
+            profile_directory: path to the language profiles
+            supported_languages: set of languages from which the predictions will be made;
+            The languages should be in ISO 639-1 format (eg: "fr", "en", "de" and so on)
+        """
         list_files = supported_languages if supported_languages else os.listdir(profile_directory)
 
         if not list_files:
@@ -120,9 +128,9 @@ class DetectorFactory(object):
 
 PROFILES_DIRECTORY = path.join(path.dirname(__file__), 'profiles')
 _factory = None
-_supported_languages = []
+_supported_languages = None
 
-def init_factory(supported_languages=[]):
+def init_factory(supported_languages=None):
     global _factory
     global _supported_languages
 
@@ -131,15 +139,17 @@ def init_factory(supported_languages=[]):
         _factory = DetectorFactory()
         _factory.load_profile(PROFILES_DIRECTORY, _supported_languages)
 
-def detect(text, supported_languages=[]):
+def detect(text, supported_languages=None):
     init_factory(supported_languages=supported_languages)
     detector = _factory.create()
     detector.append(text)
+
     return detector.detect()
 
 
-def detect_langs(text, supported_languages=[]):
+def detect_langs(text, supported_languages=None):
     init_factory(supported_languages=supported_languages)
     detector = _factory.create()
     detector.append(text)
+
     return detector.get_probabilities()
