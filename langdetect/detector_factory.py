@@ -154,8 +154,8 @@ def is_chinese(predicted_language):
 
 def predict_simplified_traditional(text):
     predicted_language = "zh" if mafan.text.is_simplified(text) else "zh-tw"
-    
-    return Language(lang=predicted_language, prob=0.999999999)
+
+    return [Language(lang=predicted_language, prob=0.999999999)]
 
 def detect_langs(text, supported_languages=None):
     init_factory(supported_languages=supported_languages)
